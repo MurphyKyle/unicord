@@ -1,0 +1,109 @@
+﻿using Discord.WebSocket;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Discord;
+using CommunityBot.Configuration;
+using CommunityBot.Features.Trivia;
+using CommunityBot.Handlers;
+using Microsoft.Extensions.DependencyInjection;
+using Discord.Commands;
+
+namespace CommunityBot
+{
+    class Program
+    {
+        private static DiscordSocketClient _client;
+        private static IServiceProvider _serviceProvider;
+        private static ApplicationSettings _appSettings;
+
+        private static async Task Main(string[] args)
+        {
+            _appSettings = new ApplicationSettings(args);
+
+            var discordSocketConfig = GetDiscordSocketConfig();
+            if (discordSocketConfig == null) return;
+
+            _client = new DiscordSocketClient(discordSocketConfig);
+
+            _serviceProvider = ConfigureServices();
+
+            _serviceProvider.GetRequiredService<DiscordEventHandler>().InitDiscordEvents();
+            await _serviceProvider.GetRequiredService<CommandHandler>().InitializeAsync();
+
+            while (!await AttemptLogin()){}
+
+            await _client.StartAsync();
+
+            await Task.Delay(-1);
+        }
+
+        private static DiscordSocketConfig GetDiscordSocketConfig()
+        {
+            return new DiscordSocketConfig()
+            {
+                LogLevel = _appSettings.Verbose ? LogSeverity.Verbose : LogSeverity.Info,
+                MessageCacheSize = _appSettings.CacheSize,
+                AlwaysDownloadUsers = true
+            };
+        }
+
+        private static async Task<bool> AttemptLogin()
+        {
+            try
+            {
+                await _client.LoginAsync(TokenType.Bot, BotSettings.config.Token);
+                return true;
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.InnerException == null)
+                {
+                    Console.WriteLine($"An HTTP Request exception occurred.\nMessage:\n{e.Message}");
+                }
+                else
+                {
+                    Global.WriteColoredLine($"An HTTP request ran into a problem:\n{e.InnerException.Message}",
+                        ConsoleColor.Red);
+                }
+
+                var shouldTryAgain = GetTryAgainRequested();
+                if (!shouldTryAgain) Environment.Exit(0);
+                return false;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("An exception occurred. Your token might not be configured, or it might be wrong.");
+
+                var shouldTryAgain = GetTryAgainRequested();
+                if (!shouldTryAgain) Environment.Exit(0);
+                BotSettings.LoadConfig();
+                return false;
+            }
+        }
+
+        private static bool GetTryAgainRequested()
+        {
+            if (Global.Headless) return false;
+
+            Console.WriteLine("\nDo you want to try again? (y/n)");
+            Global.WriteColoredLine("(not trying again closes the application)\n", ConsoleColor.Yellow);
+
+            return Console.ReadKey().Key == ConsoleKey.Y;
+        }
+
+        private static IServiceProvider ConfigureServices()
+        {
+            return new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(_appSettings)
+                .AddSingleton<ServerActivityLogger.ServerActivityLogger>()
+                .AddSingleton<CommandService>()
+                .AddSingleton<CommandHandler>()
+                .AddSingleton<DiscordEventHandler>()
+                .AddSingleton<Logger>()
+                .AddSingleton<TriviaGames>()
+                .BuildServiceProvider();     
+        }
+    }
+}
