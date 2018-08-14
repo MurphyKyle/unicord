@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace CommunityBot.Entities
+namespace CommunityBot.Featires.Inventory
 {
+	/// <summary>
+	/// All item data and helper methods go here
+	/// </summary>
 	public class Item
 	{
 
@@ -32,19 +35,9 @@ namespace CommunityBot.Entities
 		/// }
 		/// </summary>
 		/// <param name="jsonHopeful"></param>
-		public Item(string jsonHopeful)
+		public Item(string jsonObj)
 		{
-			// is in json format?
-			if (CheckExistsNameDesc(jsonHopeful))
-			{
-				// yes - parse to an item
-
-			}
-			else
-			{
-				// no - complain and do nothing
-
-			}
+			
 
 		}
 
@@ -52,30 +45,10 @@ namespace CommunityBot.Entities
 		///  Item Format == {name, description, attKey1:attVal1, attKey2:attVal2 etc...}
 		/// </summary>
 		/// <param name="itemFormatHopeful"></param>
-		public Item(params string[] itemFormatHopeful)
+		public Item(params string[] itemArray)
 		{
-			if (CheckExistsNameDesc(itemFormatHopeful))
-			{
-
-			}
-			else
-			{
-				// complain and do nothing
-
-			}
-		}
-
-
-		private bool CheckExistsNameDesc(string itemHopeful)
-		{
-			return itemHopeful.Contains("name") && itemHopeful.Contains("description");
-		}
-
-		private bool CheckExistsNameDesc(string[] itemHopeful)
-		{
-			// length MUST be AT LEAST 2, for name and description
-			return itemHopeful.Length >= 2;
-		}
+			
+		}		
 
 		public Dictionary<string, string> ItemAttributes
 		{
