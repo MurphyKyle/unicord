@@ -39,12 +39,36 @@ namespace CommunityBot.Modules
                 Color = new Color(114, 137, 218)
             };
 
-            foreach (var module in _service.Modules)
+            var builder2 = new EmbedBuilder()
             {
-                await AddModuleEmbedField(module, builder);
+                Title = "Help Continued",
+                Description = $"These are the commands you can use in {contextString}",
+                Color = new Color(114, 137, 218)
+            };
+
+            int count = 0;
+            for (int i = 0; i < _service.Modules.Count(); i++)
+            {
+                if (i < 10)
+                {
+                    await AddModuleEmbedField(_service.Modules.ElementAt(i), builder);
+                    //if (!string.IsNullOrEmpty(_service.Modules.ElementAt(i).Remarks))
+                    //{
+                    //    count += _service.Modules.ElementAt(i).Remarks.Count();
+                    //}
+                    //if (!string.IsNullOrEmpty(_service.Modules.ElementAt(i).Summary))
+                    //{
+                    //    count += _service.Modules.ElementAt(i).Summary.Count();
+                    //}
+                }
+                else
+                {
+                    await AddModuleEmbedField(_service.Modules.ElementAt(i), builder2);
+                }
             }
 
             await dmChannel.SendMessageAsync("", false, builder.Build());
+            await dmChannel.SendMessageAsync("", false, builder2.Build());
 
             // Embed are limited to 24 Fields at max. So lets clear some stuff
             // out and then send it in multiple embeds if it is too big.
@@ -55,6 +79,15 @@ namespace CommunityBot.Modules
             {
                 builder.Fields.RemoveRange(0, 25);
                 await dmChannel.SendMessageAsync("", false, builder.Build());
+
+            }
+            builder2.WithTitle("")
+                .WithDescription("")
+                .WithAuthor("");
+            while (builder2.Fields.Count > 24)
+            {
+                builder2.Fields.RemoveRange(0, 25);
+                await dmChannel.SendMessageAsync("", false, builder2.Build());
 
             }
         }
@@ -188,17 +221,17 @@ namespace CommunityBot.Modules
                 );
                 return emb.AddField(GitHub.ContributionStat(cont, stats));
             });
-            
+
             await ReplyAsync("", false, embB.Build());
         }
 
-    [Command("Addition")]
+        [Command("Addition")]
         [Summary("Adds 2 numbers together.")]
         public async Task AddAsync(float num1, float num2)
         {
             await ReplyAsync($"The Answer To That Is: {num1 + num2}");
         }
-        
+
         [Command("Subtract")]
         [Summary("Subtracts 2 numbers.")]
         public async Task SubstractAsync(float num1, float num2)

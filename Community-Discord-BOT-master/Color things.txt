@@ -1,0 +1,12 @@
+css == Green
+fix == orange
+md == blue
+
+
+RED:
+```diff
+- TEST```
+
+GREEN:
+```diff
++ TEST```
