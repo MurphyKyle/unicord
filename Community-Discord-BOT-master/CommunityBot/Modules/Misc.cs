@@ -24,8 +24,7 @@ namespace CommunityBot.Modules
 
         [Cooldown(15)]
         [Command("help"), Alias("h"),
-         Remarks(
-             "DMs you a huge message if called without parameter - otherwise shows help to the provided command or module")]
+         Remarks("DMs you a huge message if called without parameter - otherwise shows help to the provided command or module")]
         public async Task Help()
         {
             await Context.Channel.SendMessageAsync("Check your DMs.");
@@ -211,7 +210,7 @@ namespace CommunityBot.Modules
         [Summary("Multiplys 2 Numbers.")]
         public async Task MultiplyAsync(float num1, float num2)
         {
-            await ReplyAsync($"The Answer To That Is {num1 * num2}");
+            await ReplyAsync($"The Answer To That Is: {num1 * num2}");
         }
 
         [Command("Divide")]
