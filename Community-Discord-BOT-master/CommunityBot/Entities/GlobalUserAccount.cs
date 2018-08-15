@@ -21,6 +21,8 @@ namespace CommunityBot.Entities
         public Dictionary<string, string> Tags { get; set; } = new Dictionary<string, string>();
 
         public List<ReminderEntry> Reminders { get; internal set; } = new List<ReminderEntry>();
+
+		public Features.Inventory.Inventory Inv { get; set; } = new Features.Inventory.Inventory();
         /* Add more values to store */
 
         // override object.Equals
