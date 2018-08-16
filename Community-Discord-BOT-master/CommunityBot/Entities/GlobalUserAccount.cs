@@ -15,10 +15,12 @@ namespace CommunityBot.Entities
         public ulong Miunies { get; set; } = 1;
 
         public DateTime LastDaily { get; set; } = DateTime.UtcNow.AddDays(-2);
-
+        
         public DateTime LastMessage { get; set; } = DateTime.UtcNow;
 
         public Dictionary<string, string> Tags { get; set; } = new Dictionary<string, string>();
+
+        public Dictionary<string, string> Favorites { get; set; } = new Dictionary<string, string>();
 
         public List<ReminderEntry> Reminders { get; internal set; } = new List<ReminderEntry>();
         /* Add more values to store */
