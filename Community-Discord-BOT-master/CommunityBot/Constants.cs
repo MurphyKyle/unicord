@@ -13,6 +13,7 @@ namespace CommunityBot
         internal static readonly string ServerAccountsFolder = "servers";
         internal static readonly string LogFolder = "logs";
         internal static readonly string InvisibleString = "\u200b";
+        
         public const ulong DailyMuiniesGain = 250;
         public const int MessageRewardCooldown = 30;
         public const int MessageRewardMinLenght = 20;
@@ -29,5 +30,7 @@ namespace CommunityBot
             "You get a couple Miunies for sending messages (with a short cooldown).", 
             "A lot of commands have shorter and easier to use aliases!"
         };
+
+        public static readonly string monsterJson = 
     }
 }
