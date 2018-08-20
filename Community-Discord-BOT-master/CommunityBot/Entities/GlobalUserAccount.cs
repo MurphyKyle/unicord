@@ -22,7 +22,9 @@ namespace CommunityBot.Entities
 
         public List<ReminderEntry> Reminders { get; internal set; } = new List<ReminderEntry>();
 
-		public Features.Inventory.Inventory Inv { get; set; } = new Features.Inventory.Inventory();
+        public Dictionary<string, string> CharacterSheet { get; set; } = new Dictionary<string, string>();
+
+        public Features.Inventory.Inventory Inv { get; set; } = new Features.Inventory.Inventory();
         /* Add more values to store */
 
         // override object.Equals

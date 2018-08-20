@@ -63,7 +63,7 @@ namespace CommunityBot.Modules
 " + message + "```";
                     break;
                 default:
-                    messageToPrint = Context.User.Mention + ", cannot find the color specified! Available colors: (Red, Orange, Green)";
+                    messageToPrint = Context.User.Mention + ": Cannot find the color specified! Available colors: (Red, Orange, Green)";
                     break;
             }
             await Context.Channel.SendMessageAsync(Context.User.Username + " says: " + messageToPrint);
@@ -100,6 +100,7 @@ namespace CommunityBot.Modules
         [Command("font"), Alias("f")]
         [Cooldown(5)]
         [Summary("Change the font for the message sent <(f)ont (font type) (message)>")]
+        [Remarks("Font Types: Circled, Fullwidth, Parenthesized, Squared, A-cute, CJK+Thai, Stroked, Subscript, Superscript, Inverted, Reversed")]
         public async Task FontMessage(string font, [Remainder] string message)
         {
             await (Context.Message.Channel as SocketTextChannel).DeleteMessagesAsync(await Context.Message.Channel.GetMessagesAsync(1).FlattenAsync());
@@ -131,13 +132,14 @@ namespace CommunityBot.Modules
             }
             else
             {
-                await Context.Channel.SendMessageAsync(Context.User.Mention + ", something went wrong, go here to find available fonts: http://qaz.wtf/u/convert.cgi?text=" + message);
+                await Context.Channel.SendMessageAsync(Context.User.Mention + ": Something went wrong.\nFont Types: Circled, Fullwidth, Parenthesized, Squared, A-cute, CJK+Thai, Stroked, Subscript, Superscript, Inverted, Reversed");
             }
         }
 
         [Command("afont"), Alias("af")]
         [Cooldown(5)]
         [Summary("Change the font for the anonymous message sent <(af)ont (font type) (message)>")]
+        [Remarks("Font Types: Circled, Fullwidth, Parenthesized, Squared, A-cute, CJK+Thai, Stroked, Subscript, Superscript, Inverted, Reversed")]
         public async Task AnonymousFontMessage(string font, [Remainder] string message)
         {
             await (Context.Message.Channel as SocketTextChannel).DeleteMessagesAsync(await Context.Message.Channel.GetMessagesAsync(1).FlattenAsync());
@@ -169,7 +171,7 @@ namespace CommunityBot.Modules
             }
             else
             {
-                await Context.Channel.SendMessageAsync("Something went wrong, go here to find available fonts: http://qaz.wtf/u/convert.cgi?text=" + message);
+                await Context.Channel.SendMessageAsync("Something went wrong.\nFont Types: Circled, Fullwidth, Parenthesized, Squared, A-cute, CJK+Thai, Stroked, Subscript, Superscript, Inverted, Reversed");
             }
         }
     }

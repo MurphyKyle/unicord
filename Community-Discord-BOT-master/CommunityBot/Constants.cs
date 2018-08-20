@@ -31,6 +31,6 @@ namespace CommunityBot
             "A lot of commands have shorter and easier to use aliases!"
         };
 
-        public static readonly string monsterJson = 
+        //public static readonly string monsterJson = 
     }
 }
