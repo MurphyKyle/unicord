@@ -1,4 +1,5 @@
-﻿using CommunityBot.Preconditions;
+﻿
+using CommunityBot.Preconditions;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
