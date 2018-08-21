@@ -159,10 +159,10 @@ namespace CommunityBot.Modules
                     break;
                 case "weapon":
                 case "we":
-                    Regex regex = new Regex("[1-9]*d[1-9]*");
+                    Regex regex = new Regex("[1-9][0-9]*[d|D][1-9][0-9]*");
                     if (regex.IsMatch(value))
                     {
-                        account.CharacterSheet.Add("weapon", value);
+                        account.CharacterSheet.Add("weapon", value.ToLower());
                         retVal += $"{value} as a weapon!";
                     }
                     else
@@ -506,6 +506,7 @@ namespace CommunityBot.Modules
 
             await Context.Channel.SendMessageAsync("", embed: embed.Build());
         }
+
         [Command("RollStats"), Remarks("Generates Random stats")]
         [Alias("Stats", "stats")]
         public async Task RollStats()
@@ -567,6 +568,50 @@ namespace CommunityBot.Modules
                 return 24;
             }
             return total;
+        }
+
+        [Command("rl"), Alias("roll"), Summary("Rolls any amount of dice (XdY) and returns what it has rolled"), Remarks("If it has over 2048 characters, it just displays the total")]
+        public async Task RollDie(string roll)
+        {
+            Regex regex = new Regex("[1-9][0-9]*[d|D][1-9][0-9]*");
+            if (regex.IsMatch(roll))
+            {
+                string[] split = roll.Split('d');
+                Random rand = new Random();
+                List<int> nums = new List<int>();
+                for (int i = 0; i < int.Parse(split[0]); i++)
+                {
+                    nums.Add(rand.Next(1, int.Parse(split[1])));
+                }
+                int sum = 0;
+                string retVal = "";
+                nums.ForEach(x => sum += x);
+                nums.ForEach(x => retVal += $"{x}+");
+                retVal = retVal.TrimEnd('+');
+                retVal += $". Total: {sum}";
+                if (retVal.Length > 2048)
+                {
+                    var embed = new EmbedBuilder();
+                    embed.WithTitle("Roll: ");
+                    embed.WithDescription($"Too many numbers to display. Total: {sum}");
+                    embed.WithColor(222, 222, 222);
+
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
+                }
+                else
+                {
+                    var embed = new EmbedBuilder();
+                    embed.WithTitle("Roll: ");
+                    embed.WithDescription(retVal);
+                    embed.WithColor(222, 222, 222);
+
+                    await Context.Channel.SendMessageAsync("", embed: embed.Build());
+                }
+            }
+            else
+            {
+                await Context.Channel.SendMessageAsync("Please enter a valid roll (XdY)");
+            }
         }
     }
 }
