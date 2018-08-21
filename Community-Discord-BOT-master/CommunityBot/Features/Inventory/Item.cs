@@ -10,7 +10,6 @@ namespace CommunityBot.Featires.Inventory
 	/// </summary>
 	public class Item
 	{
-
 		private string name = "DABOT'S_ITAM";
 		private string description = "iT haS 1337 MaGiKaL PowArz";
 		private Dictionary<string, string> itemAttributes = new Dictionary<string, string>();
@@ -21,36 +20,35 @@ namespace CommunityBot.Featires.Inventory
 		/// description = "iT haS 1337 MaGiKaL PowArz"
 		/// </summary>
 		public Item() { }
-
+		
 		/// <summary>
-		/// JSON Format ==
-		/// {
-		/// "name": "John",
-		/// "description": "Smith",
-		/// "attributes": {
-		///	"attKey1": "attVal1",
-		///	"attKey2": "attVal2",
-		///	"attKey3": "attVal3",
-		///	}
-		/// }
+		/// Creates an item without any attributes given
 		/// </summary>
-		/// <param name="jsonHopeful"></param>
-		public Item(string jsonObj)
+		/// <param name="name">Item name</param>
+		/// <param name="description">Item description</param>
+		public Item(string name, string description)
 		{
-			
-
+			Name = name.Trim(',');
+			Description = description.Trim(',');
 		}
 
 		/// <summary>
-		///  Item Format == {name, description, attKey1:attVal1, attKey2:attVal2 etc...}
+		/// Creates an item with all available fields
 		/// </summary>
-		/// <param name="itemFormatHopeful"></param>
-		public Item(params string[] itemArray)
+		/// <param name="name">Item name</param>
+		/// <param name="description">Item description</param>
+		/// <param name="atts">Item's attributes</param>
+		public Item(string name, string description, Dictionary<string, string> atts)
 		{
-			
-		}		
+			Name = name.Trim(',');
+			Description = description.Trim(',');
+			Attributes = atts;
+		}
 
-		public Dictionary<string, string> ItemAttributes
+
+
+		#region Properties
+		public Dictionary<string, string> Attributes
 		{
 			get { return itemAttributes; }
 			set { itemAttributes = value; }
@@ -67,6 +65,37 @@ namespace CommunityBot.Featires.Inventory
 			get { return name; }
 			set { name = value; }
 		}
+		#endregion
 
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append($"Name = {Name}\n");
+			sb.Append($"\tDescription = {Description} \n");
+			sb.Append($"\tAttributes\n{Attributes.GetString()}");
+
+			return sb.ToString();
+		}
+
+		public string ToJson()
+		{
+			return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+		}
+
+	}
+
+
+	public static class Extensions
+	{
+		public static string GetString(this Dictionary<string, string> dict)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (string key in dict.Keys)
+			{
+				sb.Append($"\t\t{key} = {dict[key]}\n");
+			}
+			return sb.ToString();
+		}
 	}
 }
