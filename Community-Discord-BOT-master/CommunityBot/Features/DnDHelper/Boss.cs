@@ -39,7 +39,7 @@ namespace CommunityBot.Features.DnDHelper
         private int RollStat(int difficulty)
         {
             int total = 0;
-            for (int i = 0; i < 2 ; i++)
+            for (int i = 0; i < 3 ; i++)
             {
                 total += randy.Next(1, 6);
             }

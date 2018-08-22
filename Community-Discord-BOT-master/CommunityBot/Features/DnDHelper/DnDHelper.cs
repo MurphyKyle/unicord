@@ -18,7 +18,7 @@ namespace CommunityBot.Features.DnDHelper
 
         public static string ParseMonsters(string cr)
         {
-            string s = System.IO.File.ReadAllText(Directory.GetCurrentDirectory() + @"\resources\JSONFiles\MonsterList.txt");
+            string s = System.IO.File.ReadAllText(@"..\..\..\JSONFiles\MonsterList.txt");
             JObject m = (JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(s);
             List<Monster> monsters = new List<Monster>();
             IList<JToken> list = m;
@@ -54,7 +54,7 @@ namespace CommunityBot.Features.DnDHelper
 
         public static string ParseMagicItems(int cl)
         {
-            string s = System.IO.File.ReadAllText(Directory.GetCurrentDirectory() + @"\resources\JSONFiles\MagicItems.txt");
+            string s = System.IO.File.ReadAllText(@"..\\..\\..\JSONFiles\MagicItems.txt");
             JObject m = (JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(s);
             List<MagicItem> items = new List<MagicItem>();
             IList<JToken> list = m;
