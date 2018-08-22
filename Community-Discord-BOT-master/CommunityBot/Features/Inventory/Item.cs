@@ -20,7 +20,7 @@ namespace CommunityBot.Featires.Inventory
 		/// description = "iT haS 1337 MaGiKaL PowArz"
 		/// </summary>
 		public Item() { }
-		
+
 		/// <summary>
 		/// Creates an item without any attributes given
 		/// </summary>
@@ -45,13 +45,11 @@ namespace CommunityBot.Featires.Inventory
 			Attributes = atts;
 		}
 
-
-
 		#region Properties
-		public Dictionary<string, string> Attributes
+		public string Name
 		{
-			get { return itemAttributes; }
-			set { itemAttributes = value; }
+			get { return name; }
+			set { name = value; }
 		}
 
 		public string Description
@@ -60,10 +58,10 @@ namespace CommunityBot.Featires.Inventory
 			set { description = value; }
 		}
 
-		public string Name
+		public Dictionary<string, string> Attributes
 		{
-			get { return name; }
-			set { name = value; }
+			get { return itemAttributes; }
+			set { itemAttributes = value; }
 		}
 		#endregion
 
