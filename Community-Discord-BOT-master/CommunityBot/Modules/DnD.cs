@@ -616,7 +616,7 @@ namespace CommunityBot.Modules
 
         [Command("Boss"), Remarks("Generates Random stats")]
         [Alias("boss", "big boy")]
-        public async Task Boss(int difficulty)
+        public async Task Boss(int difficulty = 1)
         {
             var embed = new EmbedBuilder();
             embed.WithTitle("A Boss!: ");
