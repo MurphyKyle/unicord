@@ -6,44 +6,7 @@ namespace CommunityBot.Features.DnDHelper.Models
 {
     public class RandomClassGenerator
     {
-        //1-3	Alchemist
-        //4	Anti-paladin
-        //5-7	Arcanist
-        //8-10	Barbarian
-        //11-13	Bard
-        //14-16	Bloodrager
-        //17-19	Brawler
-        //20-22	Cavalier
-        //23-25	Cleric
-        //26-28	Druid
-        //29-31	Fighter
-        //32-34	Gunslinger
-        //35-37	Hunter
-        //38-40	Investigator
-        //41-42	Kineticist
-        //43-45	Magus
-        //46-47	Medium
-        //48-50	Monk
-        //51	Ninja
-        //52-53	Occultist
-        //54-56	Oracle
-        //57-59	Paladin
-        //60-61	Psychic
-        //62-64	Ranger
-        //65-67	Rogue
-        //68	Samurai
-        //69-71	Shaman
-        //72-74	Skald
-        //75-77	Slayer
-        //78-81	Sorcerer
-        //82	Spiritualist
-        //83-85	Summoner
-        //86-88	Swashbuckler
-        //89-91	Warpriest
-        //92-94	Witch
-        //95-97	Wizard
-        //98-99	Vigilante
-        //100	Own choice
+        //http://triangularroom.com/2015/10/02/pathfinder-random-class-table/
 
         private Random rand = new Random();
         public string Class { get; set; }
