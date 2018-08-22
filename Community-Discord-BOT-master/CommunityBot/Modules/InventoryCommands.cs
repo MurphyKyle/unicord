@@ -11,6 +11,9 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityBot.Features.Inventory;
+using Newtonsoft.Json;
+using System.Xml;
 
 namespace CommunityBot.Modules
 {
@@ -50,7 +53,6 @@ namespace CommunityBot.Modules
 			{
 				response = "Y U N0 HAVE STUFF?";
 				//await dmChannel.SendMessageAsync("Y U N0 HAVE STUFF?", false);
-				return;
 			}
 			else
 			{
@@ -214,10 +216,29 @@ namespace CommunityBot.Modules
 		[Command("invaddjson"), Alias("addjson")]
 		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
 		[Cooldown(5)]
-		public async Task AddJson()
+		public async Task AddJson([Remainder] string jsonText)
 		{
 			// get the calling user
 			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+			userAccount.Inv = JsonConvert.DeserializeObject<Inventory>(jsonText);
+
+			await Context.Channel.SendMessageAsync("RIGHTEOUS, we got itams!");
+		}
+
+		/// <summary>
+		/// The bot will take in a command like “~inventory” and print all their items to the user.
+		/// </summary>
+		[Command("invgetjson"), Alias("getjson")]
+		[Summary("Gets the entire inventory in JSON or just the item with the given name")]
+		[Cooldown(10)]
+		public async Task GetJson([Remainder] string name = null)
+		{
+			// get the calling user
+			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+			// get json response
+			string msg = "Your inventory itams... \n" + userAccount.Inv.ToJson(name);
+			// send json response
+			await Context.Channel.SendMessageAsync(msg);
 		}
 
 		/// <summary>
@@ -226,7 +247,7 @@ namespace CommunityBot.Modules
 		[Command("clearmyinventory")]
 		[Summary("DELETES ALL ITEMS from the inventory")]
 		[Cooldown(10)]
-		public async Task ClearInventory([Remainder] string confirmer)
+		public async Task ClearInventory([Remainder] string confirmer = "nope")
 		{
 			// get the calling user
 			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);

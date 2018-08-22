@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace CommunityBot.Features.Inventory
 {
@@ -18,7 +19,8 @@ namespace CommunityBot.Features.Inventory
 			get { return itams; }
 			private set { itams = value; }
 		}
-
+		
+		[JsonIgnore]
 		public int Size
 		{
 			get { return Itams.Count; }
@@ -28,9 +30,9 @@ namespace CommunityBot.Features.Inventory
 		/// </summary>
 		public Inventory() { }
 
-		public Inventory(List<Item> itams)
+		public Inventory(IEnumerable<Item> itams)
 		{
-			Itams = itams;
+			Itams = itams as List<Item>;
 		}
 
 		/// <summary>
@@ -60,18 +62,6 @@ namespace CommunityBot.Features.Inventory
 			return true;
 		}
 
-		/// <summary>
-		/// Tries to add an item to the user's inventory from a string array
-		/// </summary>
-		/// <param name="hopefulArrayItem">Item details separated in an array</param>
-		/// <returns>bool indicating success or failure</returns>
-		public bool AddToInv(string[] hopefulArrayItem)
-		{
-			
-
-			return false;
-		}
-		
 		public void Clear()
 		{
 			Itams.Clear();
@@ -87,6 +77,12 @@ namespace CommunityBot.Features.Inventory
 			Item[] itms = GetItemByName(name);
 			Itams.RemoveAll(x => x.Name.Equals(name));
 			return true;
+		}
+
+		public string ToJson(string name = null)
+		{
+			Inventory stackInv = name == null ? this : new Inventory(GetItemByName(name));
+			return JsonConvert.SerializeObject(stackInv, Formatting.Indented);
 		}
 
 		public override string ToString()
