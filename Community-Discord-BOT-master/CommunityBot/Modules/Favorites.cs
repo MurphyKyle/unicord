@@ -20,7 +20,7 @@ namespace CommunityBot.Modules
         /// <param name="site">the website the user wants to add</param>
         /// <param name="input">the phrase the user enters to access it</param>
         /// <returns></returns>
-        [Command("addFav")]
+        [Command("addFav"), Summary("Adds a favorite link to the user's favorites list using a phrase and a link")]
         public async Task AddFavorite(string site, [Remainder]string input)
         {
             string responce = "";
@@ -45,7 +45,7 @@ namespace CommunityBot.Modules
         /// </summary>
         /// <param name="phrase"></param>
         /// <returns></returns>
-        [Command("fetchFav")]
+        [Command("fetchFav"), Summary("Gets a user's favorite at the specified phrase location")]
         public async Task FetchLink([Remainder]string phrase)
         {
             string responce = "";
@@ -60,7 +60,7 @@ namespace CommunityBot.Modules
 
         }
 
-        [Command("rmFav")]
+        [Command("rmFav"), Summary("Removes a favorite link from the user's favorites list using a phrase")]
         public async Task RemoveFav([Remainder]string phrase)
         {
             var account = GlobalUserAccounts.GetUserAccount(Context.User.Id);

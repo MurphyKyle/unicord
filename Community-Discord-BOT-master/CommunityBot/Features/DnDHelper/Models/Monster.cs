@@ -14,11 +14,11 @@ namespace CommunityBot.Features.DnDHelper
         public string xp { get; set; }
         public string type { get; set; }
         public string page { get; set; }
-        public Dictionary<string,string> environment { get; set; }
+        public Dictionary<string, string> environment { get; set; }
 
         public Monster()
         {
-            
+
         }
 
         public override string ToString()

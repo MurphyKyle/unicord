@@ -32,7 +32,7 @@ namespace CommunityBot.Features.DnDHelper
                 {
                     var test = attributes.ElementAt(0).ElementAt(j).ToString();
                     string[] testing = test.Split('"');
-                    at.Add(testing[1], testing[testing.Count()-2]);
+                    at.Add(testing[1], testing[testing.Count() - 2]);
                 }
                 Monster mon = new Monster();
                 mon.alignment = at["alignment"];

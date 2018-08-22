@@ -44,7 +44,7 @@ namespace CommunityBot.Features.DnDHelper.Models
             {
                 Race = "Half-Orc";
             }
-            else 
+            else
             {
                 GetSpecialRace();
             }
@@ -205,7 +205,7 @@ namespace CommunityBot.Features.DnDHelper.Models
             {
                 Race = "Wyrwood";
             }
-            else 
+            else
             {
                 Race = "Wyvaran";
             }

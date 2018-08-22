@@ -11,11 +11,10 @@ using System.Threading.Tasks;
 
 namespace CommunityBot.Modules
 {
-    //embed.WithColor(70, 5, 120); -- boss color
     public class DnD : ModuleBase<SocketCommandContext>
     {
         private Random randy = new Random();
-        [Command("Encounter"), Remarks("Generates a random ancounter given the parameters")]
+        [Command("Encounter"), Summary("Generates a random ancounter given the parameters"), Remarks("Cr = Challenge Rating (Difficulty) and amount = number of monsters")]
         [Alias("Fight", "fight")]
         public async Task GenerateFight(string cr, string amount = "1")
         {
@@ -34,25 +33,25 @@ namespace CommunityBot.Modules
             {
                 if (j > 20)
                 {
-                    embed.WithDescription("While i respect your zeal that is just too many monsters \n");
+                    embed.WithDescription("While I respect your zeal that is just too many monsters \n");
                     embed.WithTitle("Too many monsters!");
                     embed.WithColor(255, 0, 0);
                 }
                 else
                 {
-                    embed.WithDescription("The monsters: \n");
+                    embed.WithDescription("__**The monsters**__\n");
                     for (int i = j; i > 0; i--)
                     {
                         embed.Description += (DnDHelperClass.ParseMonsters(cr) + "\n\n");
                     }
-                    embed.WithTitle("Your party is attacked!");
+                    embed.WithTitle("Your party has been attacked!");
                     embed.WithColor(255, 0, 0);
                 }
             }
             await Context.Channel.SendMessageAsync("", embed: embed.Build());
         }
 
-        [Command("sheet")]
+        [Command("sheet"), Summary("Command for storing values in your character sheet"), Remarks("Try adding (s)trength, (d)exterity, (c)onstitution, (i)ntelligence, (w)isdom, (ch)arisma, (n)ame, (we)apon, or (a)rmor.")]
         public async Task CharacterSheetSave(string stat, [Remainder]string value)
         {
             bool valid = true;
@@ -203,273 +202,289 @@ namespace CommunityBot.Modules
 
         private static bool EarlyStop { get; set; } = false;
 
-        [Command("duel")]
+        [Command("duel"), Summary("Duel your character against anothers")]
         public async Task CharacterSheetDuel(IGuildUser playerToFight)
         {
-            Random rand = new Random();
-            var player1 = GlobalUserAccounts.GetUserAccount(Context.User.Id);
-            var player2 = GlobalUserAccounts.GetUserAccount(playerToFight.Id);
-
-            int player1Hp = int.Parse(player1.CharacterSheet["hp"]);
-            int player2Hp = int.Parse(player2.CharacterSheet["hp"]);
-            int player1DexMod = (int.Parse(player1.CharacterSheet["dex"]) - 10) / 2;
-            int player2DexMod = (int.Parse(player2.CharacterSheet["dex"]) - 10) / 2;
-            int player1StrMod = (int.Parse(player1.CharacterSheet["str"]) - 10) / 2;
-            int player2StrMod = (int.Parse(player2.CharacterSheet["str"]) - 10) / 2;
-            int initiativePlayer1 = rand.Next(1, 21) + player1DexMod;
-            int initiativePlayer2 = rand.Next(1, 21) + player2DexMod;
-
-            string[] player1Weapon = player1.CharacterSheet["weapon"].Split('d');
-            int player1WeaponNumber = int.Parse(player1Weapon[0]);
-            int player1WeaponSide = int.Parse(player1Weapon[1]);
-
-            string[] player2Weapon = player2.CharacterSheet["weapon"].Split('d');
-            int player2WeaponNumber = int.Parse(player2Weapon[0]);
-            int player2WeaponSide = int.Parse(player2Weapon[1]);
-
-            bool player1First = true;
-            if (initiativePlayer1 == initiativePlayer2)
+            EarlyStop = false;
+            try
             {
-                if (player2DexMod > player1DexMod)
+                Random rand = new Random();
+                var player1 = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+                var player2 = GlobalUserAccounts.GetUserAccount(playerToFight.Id);
+
+                int player1Hp = int.Parse(player1.CharacterSheet["hp"]);
+                int player2Hp = int.Parse(player2.CharacterSheet["hp"]);
+                int player1DexMod = (int.Parse(player1.CharacterSheet["dex"]) - 10) / 2;
+                int player2DexMod = (int.Parse(player2.CharacterSheet["dex"]) - 10) / 2;
+                int player1StrMod = (int.Parse(player1.CharacterSheet["str"]) - 10) / 2;
+                int player2StrMod = (int.Parse(player2.CharacterSheet["str"]) - 10) / 2;
+                int initiativePlayer1 = rand.Next(1, 21) + player1DexMod;
+                int initiativePlayer2 = rand.Next(1, 21) + player2DexMod;
+
+                string[] player1Weapon = player1.CharacterSheet["weapon"].Split('d');
+                int player1WeaponNumber = int.Parse(player1Weapon[0]);
+                int player1WeaponSide = int.Parse(player1Weapon[1]);
+
+                string[] player2Weapon = player2.CharacterSheet["weapon"].Split('d');
+                int player2WeaponNumber = int.Parse(player2Weapon[0]);
+                int player2WeaponSide = int.Parse(player2Weapon[1]);
+
+                bool player1First = true;
+                if (initiativePlayer1 == initiativePlayer2)
                 {
-                    player1First = false;
-                }
-                else if (player1DexMod == player2DexMod)
-                {
-                    int finalizer = rand.Next(1, 21);
-                    if (finalizer > 10)
+                    if (player2DexMod > player1DexMod)
                     {
                         player1First = false;
                     }
-                }
-            }
-            else if (initiativePlayer2 > initiativePlayer1)
-            {
-                player1First = false;
-            }
-
-            int player1AC = 10 + player1DexMod + (int.Parse(player1.CharacterSheet["armor"]));
-            int player2AC = 10 + player2DexMod + (int.Parse(player2.CharacterSheet["armor"]));
-
-            int round = 1;
-            do
-            {
-                await Context.Channel.SendMessageAsync($"Round {round}! Fight...");
-                if (player1First)
-                {
-                    int attackRoll = rand.Next(0, 21) + player1StrMod;
-                    int damage = 0;
-                    for (int i = 0; i < player1WeaponNumber; i++)
+                    else if (player1DexMod == player2DexMod)
                     {
-                        damage += rand.Next(1, player1WeaponSide);
-                    }
-                    if (attackRoll > player2AC)
-                    {
-                        player2Hp -= damage;
-                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} for {damage} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
-                        if (player2Hp < 0)
+                        int finalizer = rand.Next(1, 21);
+                        if (finalizer > 10)
                         {
-                            break;
+                            player1First = false;
                         }
                     }
-                    else if (attackRoll == player2AC)
+                }
+                else if (initiativePlayer2 > initiativePlayer1)
+                {
+                    player1First = false;
+                }
+
+                int player1AC = 10 + player1DexMod + (int.Parse(player1.CharacterSheet["armor"]));
+                int player2AC = 10 + player2DexMod + (int.Parse(player2.CharacterSheet["armor"]));
+
+                int round = 1;
+                do
+                {
+                    await Context.Channel.SendMessageAsync($"Round {round}! Fight...");
+                    if (player1First)
                     {
-                        player2Hp -= (damage / 2);
-                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
-                        if (player2Hp < 0)
+                        int attackRoll = rand.Next(0, 21) + player1StrMod;
+                        int damage = 0;
+                        for (int i = 0; i < player1WeaponNumber; i++)
                         {
-                            break;
+                            damage += rand.Next(1, player1WeaponSide);
+                        }
+                        if (attackRoll > player2AC)
+                        {
+                            player2Hp -= damage;
+                            await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} for {damage} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
+                            if (player2Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else if (attackRoll == player2AC)
+                        {
+                            player2Hp -= (damage / 2);
+                            await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
+                            if (player2Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} missed {player2.CharacterSheet["name"]}! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} missed {player2.CharacterSheet["name"]}! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
+                        int attackRoll = rand.Next(0, 21) + player2StrMod;
+                        int damage = 0;
+                        for (int i = 0; i < player2WeaponNumber; i++)
+                        {
+                            damage += rand.Next(1, player2WeaponSide);
+                        }
+                        if (attackRoll > player1AC)
+                        {
+                            player1Hp -= damage;
+                            await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} for {damage} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                            if (player1Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else if (attackRoll == player1AC)
+                        {
+                            player1Hp -= (damage / 2);
+                            await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                            if (player1Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} missed {player1.CharacterSheet["name"]}! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                        }
                     }
-                }
-                else
+                    await Context.Channel.SendMessageAsync("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    player1First = !player1First;
+                    round++;
+                } while ((player1Hp >= 0 || player2Hp >= 0) && !EarlyStop);
+
+                if (!EarlyStop)
                 {
-                    int attackRoll = rand.Next(0, 21) + player2StrMod;
-                    int damage = 0;
-                    for (int i = 0; i < player2WeaponNumber; i++)
+                    if (player1Hp >= 0)
                     {
-                        damage += rand.Next(1, player2WeaponSide);
-                    }
-                    if (attackRoll > player1AC)
-                    {
-                        player1Hp -= damage;
-                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} for {damage} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
-                        if (player1Hp < 0)
-                        {
-                            break;
-                        }
-                    }
-                    else if (attackRoll == player1AC)
-                    {
-                        player1Hp -= (damage / 2);
-                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
-                        if (player1Hp < 0)
-                        {
-                            break;
-                        }
+                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} wins!");
                     }
                     else
                     {
-                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} missed {player1.CharacterSheet["name"]}! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} wins!");
                     }
                 }
-                await Context.Channel.SendMessageAsync("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                player1First = !player1First;
-                round++;
-            } while ((player1Hp >= 0 || player2Hp >= 0) && !EarlyStop);
-
-            if (!EarlyStop)
-            {
-                if (player1Hp >= 0)
-                {
-                    await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} wins!");
-                }
-                else
-                {
-                    await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} wins!");
-                }
+                EarlyStop = false;
             }
-            EarlyStop = false;
+            catch (Exception)
+            {
+                await Context.Channel.SendMessageAsync("One of the users do not have a completed character sheet");
+            }
         }
 
-        [Command("duel")]
+        [Command("duel"), Summary("Duel someone's character against anothers")]
         public async Task CharacterSheetDuel(IGuildUser playerToFight1, IGuildUser playerToFight2)
         {
-            Random rand = new Random();
-            var player1 = GlobalUserAccounts.GetUserAccount(playerToFight1.Id);
-            var player2 = GlobalUserAccounts.GetUserAccount(playerToFight2.Id);
-
-            int player1Hp = int.Parse(player1.CharacterSheet["hp"]);
-            int player2Hp = int.Parse(player2.CharacterSheet["hp"]);
-            int player1DexMod = (int.Parse(player1.CharacterSheet["dex"]) - 10) / 2;
-            int player2DexMod = (int.Parse(player2.CharacterSheet["dex"]) - 10) / 2;
-            int player1StrMod = (int.Parse(player1.CharacterSheet["str"]) - 10) / 2;
-            int player2StrMod = (int.Parse(player2.CharacterSheet["str"]) - 10) / 2;
-            int initiativePlayer1 = rand.Next(1, 21) + player1DexMod;
-            int initiativePlayer2 = rand.Next(1, 21) + player2DexMod;
-
-            string[] player1Weapon = player1.CharacterSheet["weapon"].Split('d');
-            int player1WeaponNumber = int.Parse(player1Weapon[0]);
-            int player1WeaponSide = int.Parse(player1Weapon[1]);
-
-            string[] player2Weapon = player2.CharacterSheet["weapon"].Split('d');
-            int player2WeaponNumber = int.Parse(player2Weapon[0]);
-            int player2WeaponSide = int.Parse(player2Weapon[1]);
-
-            bool player1First = true;
-            if (initiativePlayer1 == initiativePlayer2)
+            EarlyStop = false;
+            try
             {
-                if (player2DexMod > player1DexMod)
+                Random rand = new Random();
+                var player1 = GlobalUserAccounts.GetUserAccount(playerToFight1.Id);
+                var player2 = GlobalUserAccounts.GetUserAccount(playerToFight2.Id);
+
+                int player1Hp = int.Parse(player1.CharacterSheet["hp"]);
+                int player2Hp = int.Parse(player2.CharacterSheet["hp"]);
+                int player1DexMod = (int.Parse(player1.CharacterSheet["dex"]) - 10) / 2;
+                int player2DexMod = (int.Parse(player2.CharacterSheet["dex"]) - 10) / 2;
+                int player1StrMod = (int.Parse(player1.CharacterSheet["str"]) - 10) / 2;
+                int player2StrMod = (int.Parse(player2.CharacterSheet["str"]) - 10) / 2;
+                int initiativePlayer1 = rand.Next(1, 21) + player1DexMod;
+                int initiativePlayer2 = rand.Next(1, 21) + player2DexMod;
+
+                string[] player1Weapon = player1.CharacterSheet["weapon"].Split('d');
+                int player1WeaponNumber = int.Parse(player1Weapon[0]);
+                int player1WeaponSide = int.Parse(player1Weapon[1]);
+
+                string[] player2Weapon = player2.CharacterSheet["weapon"].Split('d');
+                int player2WeaponNumber = int.Parse(player2Weapon[0]);
+                int player2WeaponSide = int.Parse(player2Weapon[1]);
+
+                bool player1First = true;
+                if (initiativePlayer1 == initiativePlayer2)
                 {
-                    player1First = false;
-                }
-                else if (player1DexMod == player2DexMod)
-                {
-                    int finalizer = rand.Next(1, 21);
-                    if (finalizer > 10)
+                    if (player2DexMod > player1DexMod)
                     {
                         player1First = false;
                     }
-                }
-            }
-            else if (initiativePlayer2 > initiativePlayer1)
-            {
-                player1First = false;
-            }
-
-            int player1AC = 10 + player1DexMod + (int.Parse(player1.CharacterSheet["armor"]));
-            int player2AC = 10 + player2DexMod + (int.Parse(player2.CharacterSheet["armor"]));
-
-            int round = 1;
-            do
-            {
-                await Context.Channel.SendMessageAsync($"Round {round}! Fight...");
-                if (player1First)
-                {
-                    int attackRoll = rand.Next(0, 21) + player1StrMod;
-                    int damage = 0;
-                    for (int i = 0; i < player1WeaponNumber; i++)
+                    else if (player1DexMod == player2DexMod)
                     {
-                        damage += rand.Next(1, player1WeaponSide);
-                    }
-                    if (attackRoll > player2AC)
-                    {
-                        player2Hp -= damage;
-                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} for {damage} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
-                        if (player2Hp < 0)
+                        int finalizer = rand.Next(1, 21);
+                        if (finalizer > 10)
                         {
-                            break;
+                            player1First = false;
                         }
                     }
-                    else if (attackRoll == player2AC)
+                }
+                else if (initiativePlayer2 > initiativePlayer1)
+                {
+                    player1First = false;
+                }
+
+                int player1AC = 10 + player1DexMod + (int.Parse(player1.CharacterSheet["armor"]));
+                int player2AC = 10 + player2DexMod + (int.Parse(player2.CharacterSheet["armor"]));
+
+                int round = 1;
+                do
+                {
+                    await Context.Channel.SendMessageAsync($"Round {round}! Fight...");
+                    if (player1First)
                     {
-                        player2Hp -= (damage / 2);
-                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
-                        if (player2Hp < 0)
+                        int attackRoll = rand.Next(0, 21) + player1StrMod;
+                        int damage = 0;
+                        for (int i = 0; i < player1WeaponNumber; i++)
                         {
-                            break;
+                            damage += rand.Next(1, player1WeaponSide);
+                        }
+                        if (attackRoll > player2AC)
+                        {
+                            player2Hp -= damage;
+                            await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} for {damage} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
+                            if (player2Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else if (attackRoll == player2AC)
+                        {
+                            player2Hp -= (damage / 2);
+                            await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} hit {player2.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
+                            if (player2Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} missed {player2.CharacterSheet["name"]}! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
                         }
                     }
                     else
                     {
-                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} missed {player2.CharacterSheet["name"]}! {player2.CharacterSheet["name"]}: {player2Hp}/{int.Parse(player2.CharacterSheet["hp"])}");
+                        int attackRoll = rand.Next(0, 21) + player2StrMod;
+                        int damage = 0;
+                        for (int i = 0; i < player2WeaponNumber; i++)
+                        {
+                            damage += rand.Next(1, player2WeaponSide);
+                        }
+                        if (attackRoll > player1AC)
+                        {
+                            player1Hp -= damage;
+                            await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} for {damage} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                            if (player1Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else if (attackRoll == player1AC)
+                        {
+                            player1Hp -= (damage / 2);
+                            await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                            if (player1Hp < 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} missed {player1.CharacterSheet["name"]}! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                        }
                     }
-                }
-                else
+                    await Context.Channel.SendMessageAsync("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    player1First = !player1First;
+                    round++;
+                } while ((player1Hp >= 0 || player2Hp >= 0) && !EarlyStop);
+
+                if (!EarlyStop)
                 {
-                    int attackRoll = rand.Next(0, 21) + player2StrMod;
-                    int damage = 0;
-                    for (int i = 0; i < player2WeaponNumber; i++)
+                    if (player1Hp >= 0)
                     {
-                        damage += rand.Next(1, player2WeaponSide);
-                    }
-                    if (attackRoll > player1AC)
-                    {
-                        player1Hp -= damage;
-                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} for {damage} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
-                        if (player1Hp < 0)
-                        {
-                            break;
-                        }
-                    }
-                    else if (attackRoll == player1AC)
-                    {
-                        player1Hp -= (damage / 2);
-                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} hit {player1.CharacterSheet["name"]} with a glancing blow of {damage / 2} damage! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
-                        if (player1Hp < 0)
-                        {
-                            break;
-                        }
+                        await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} wins!");
                     }
                     else
                     {
-                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} missed {player1.CharacterSheet["name"]}! {player1.CharacterSheet["name"]}: {player1Hp}/{int.Parse(player1.CharacterSheet["hp"])}");
+                        await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} wins!");
                     }
                 }
-                await Context.Channel.SendMessageAsync("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                player1First = !player1First;
-                round++;
-            } while ((player1Hp >= 0 || player2Hp >= 0) && !EarlyStop);
-
-            if (!EarlyStop)
-            {
-                if (player1Hp >= 0)
-                {
-                    await Context.Channel.SendMessageAsync($"{player1.CharacterSheet["name"]} wins!");
-                }
-                else
-                {
-                    await Context.Channel.SendMessageAsync($"{player2.CharacterSheet["name"]} wins!");
-                }
+                EarlyStop = false;
             }
-            EarlyStop = false;
+            catch (Exception)
+            {
+                await Context.Channel.SendMessageAsync("One of the users do not have a completed character sheet");
+            }
         }
 
-        [Command("stopfight"), Alias("stop")]
+        [Command("stopfight"), Alias("stop"), Summary("Stops an in progress fight")]
         public async Task StopFight()
         {
             EarlyStop = true;
@@ -481,23 +496,23 @@ namespace CommunityBot.Modules
         public async Task GenerateFight()
         {
             var embed = new EmbedBuilder();
-            embed.WithDescription("The monsters: \n");
+            embed.WithDescription("**__The Monsters**__\n");
             for (int i = randy.Next(1, 10); i > 0; i--)
             {
                 embed.Description += (DnDHelperClass.ParseMonsters((randy.Next(1, 25)).ToString()) + "\n\n");
             }
-            embed.WithTitle("Your party is attacked!");
+            embed.WithTitle("Your party has been attacked!");
             embed.WithColor(255, 0, 0);
 
             await Context.Channel.SendMessageAsync("", embed: embed.Build());
         }
 
-        [Command("Treasure"), Remarks("Generates a truly random encounter")]
+        [Command("Treasure"), Remarks("Generates a truly random loot hoard")]
         [Alias("Loot", "loot")]
         public async Task GenerateLoot(int partyLevel, int partySize = 1)
         {
             var embed = new EmbedBuilder();
-            embed.WithDescription("The Loot! \n");
+            embed.WithDescription("__**The Loot**__\n");
             for (int i = randy.Next(1, partySize); i > 0; i--)
             {
                 embed.Description += (DnDHelperClass.ParseMagicItems(partyLevel) + "\n\n");
@@ -513,7 +528,7 @@ namespace CommunityBot.Modules
         public async Task RollStats()
         {
             var embed = new EmbedBuilder();
-            embed.Description += "**4d6(dropping lowest die) stats**\n";
+            embed.Description += "__**Balanced Stats**__\n";
             Dictionary<string, int> stats3d6 = new Dictionary<string, int> {
                 { "Strength", RollSingleStat() },
                 { "Dexterity", RollSingleStat() },
@@ -526,7 +541,7 @@ namespace CommunityBot.Modules
             {
                 embed.Description += $"{item.Key}:{item.Value}\n";
             }
-            embed.Description += "\n**1d20 stats**\n";
+            embed.Description += "\n__**Random Stats**__\n";
             Dictionary<string, int> stats1d20 = new Dictionary<string, int> {
                 { "Strength", randy.Next(1,20) },
                 { "Dexterity", randy.Next(1,20) },
@@ -545,14 +560,14 @@ namespace CommunityBot.Modules
             await Context.Channel.SendMessageAsync("", embed: embed.Build());
         }
 
-        [Command("Roll Stats Full"), Remarks("Generates Random stats")]
+        [Command("Roll Stats Full"), Remarks("Generates Random stats with race and class")]
         [Alias("Stats Full", "stats full")]
         public async Task RollStatsFull()
         {
             var embed = new EmbedBuilder();
             embed.Description += $"Race: {new RandomRaceGenerator().Race }\n";
             embed.Description += $"Class: {new RandomClassGenerator().Class }\n\n";
-            embed.Description += "**4d6(dropping lowest die) stats**\n";
+            embed.Description += "__**Balanced Stats**__\n";
             Dictionary<string, int> stats3d6 = new Dictionary<string, int> {
                 { "Strength", RollSingleStat() },
                 { "Dexterity", RollSingleStat() },
@@ -565,7 +580,7 @@ namespace CommunityBot.Modules
             {
                 embed.Description += $"{item.Key}:{item.Value}\n";
             }
-            embed.Description += "\n**1d20 stats**\n";
+            embed.Description += "\n__**Random Stats**__\n";
             Dictionary<string, int> stats1d20 = new Dictionary<string, int> {
                 { "Strength", randy.Next(1,20) },
                 { "Dexterity", randy.Next(1,20) },
@@ -632,7 +647,7 @@ namespace CommunityBot.Modules
                 if (retVal.Length > 2048)
                 {
                     var embed = new EmbedBuilder();
-                    embed.WithTitle("Roll: ");
+                    embed.WithTitle("__**Roll**__");
                     embed.WithDescription($"Too many numbers to display. Total: {sum}");
                     embed.WithColor(222, 222, 222);
 
@@ -641,7 +656,7 @@ namespace CommunityBot.Modules
                 else
                 {
                     var embed = new EmbedBuilder();
-                    embed.WithTitle("Roll: ");
+                    embed.WithTitle("__**Roll**__");
                     embed.WithDescription(retVal);
                     embed.WithColor(222, 222, 222);
 
@@ -654,12 +669,12 @@ namespace CommunityBot.Modules
             }
         }
 
-        [Command("Boss"), Remarks("Generates Random stats")]
+        [Command("Boss"), Remarks("Generates a boss with a difficulty modifier")]
         [Alias("boss", "big boy")]
         public async Task Boss(int difficulty = 1)
         {
             var embed = new EmbedBuilder();
-            embed.WithTitle("A Boss!: ");
+            embed.WithTitle("__**A Boss!**__");
             embed.WithDescription(new Boss(difficulty).ToString());
             embed.WithColor(70, 5, 120);
             await Context.Channel.SendMessageAsync("", embed: embed.Build());

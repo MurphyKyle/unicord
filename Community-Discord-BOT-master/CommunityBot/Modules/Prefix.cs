@@ -25,7 +25,7 @@ namespace CommunityBot.Modules
             {
                 var prefixes = guildAcc.Prefixes.ToList();
                 guildAcc.Modify(g => g.SetPrefixes(prefixes.Append(prefix).ToList()));
-                response =  $"Successfully added `{prefix}` as prefix!";
+                response = $"Successfully added `{prefix}` as prefix!";
             }
 
             await ReplyAsync(response);
@@ -42,7 +42,7 @@ namespace CommunityBot.Modules
                 var prefixes = guildAcc.Prefixes.ToList();
                 prefixes.Remove(prefix);
                 guildAcc.Modify(g => g.SetPrefixes(prefixes));
-                response =  $"Successfully removed `{prefix}` as possible prefix!";
+                response = $"Successfully removed `{prefix}` as possible prefix!";
             }
 
             await ReplyAsync(response);

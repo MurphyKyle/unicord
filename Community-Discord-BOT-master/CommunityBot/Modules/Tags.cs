@@ -13,7 +13,7 @@ using CommunityBot.Entities;
 namespace CommunityBot.Modules
 {
     [Group("Tag"), Alias("ServerTag", "Tags", "T", "ServerTags")]
-    [Summary("Permanently assing a message to a keyword (for this server) which " +
+    [Summary("Permanently assigning a message to a keyword (for this server) which " +
              "the bot will repeat if someone uses this command with that keyword.")]
     [RequireContext(ContextType.Guild)]
     public class ServerTags : ModuleBase<SocketCommandContext>
