@@ -155,7 +155,7 @@ namespace CommunityBot.Modules
 
         [Command("Game"), Alias("ChangeGame", "SetGame")]
         [Remarks("Change what the bot is currently playing.")]
-        [RequireOwner]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task SetGame([Remainder] string gamename)
         {
             await Context.Client.SetGameAsync(gamename);
@@ -204,7 +204,7 @@ namespace CommunityBot.Modules
         }
 
         [Command("setAvatar"), Remarks("Sets the bots Avatar")]
-        [RequireOwner]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task SetAvatar(string link)
         {
             var s = Context.Message.DeleteAsync();

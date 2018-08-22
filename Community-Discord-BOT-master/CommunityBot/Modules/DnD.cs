@@ -202,7 +202,7 @@ namespace CommunityBot.Modules
 
         private static bool EarlyStop { get; set; } = false;
 
-        [Command("duel"), Summary("Duel your character against anothers")]
+        [Command("duel", RunMode = RunMode.Async), Summary("Duel your character against anothers")]
         public async Task CharacterSheetDuel(IGuildUser playerToFight)
         {
             EarlyStop = false;
@@ -343,7 +343,7 @@ namespace CommunityBot.Modules
             }
         }
 
-        [Command("duel"), Summary("Duel someone's character against anothers")]
+        [Command("duel", RunMode = RunMode.Async), Summary("Duel someone's character against anothers")]
         public async Task CharacterSheetDuel(IGuildUser playerToFight1, IGuildUser playerToFight2)
         {
             EarlyStop = false;
