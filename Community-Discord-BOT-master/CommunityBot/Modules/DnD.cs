@@ -613,5 +613,16 @@ namespace CommunityBot.Modules
                 await Context.Channel.SendMessageAsync("Please enter a valid roll (XdY)");
             }
         }
+
+        [Command("Boss"), Remarks("Generates Random stats")]
+        [Alias("boss", "big boy")]
+        public async Task Boss(int difficulty)
+        {
+            var embed = new EmbedBuilder();
+            embed.WithTitle("A Boss!: ");
+            embed.WithDescription(new Boss(difficulty).ToString());
+            embed.WithColor(70, 5, 120);
+            await Context.Channel.SendMessageAsync("", embed: embed.Build());
+        }
     }
 }
