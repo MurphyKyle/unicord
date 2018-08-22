@@ -4,7 +4,9 @@ using System.Text;
 
 namespace CommunityBot.Features.DnDHelper.Models
 {
-    class RandomClassGenerator
+    public class RandomClassGenerator
     {
+        private Random randy = new Random();
+        public string Class { get; set; }
     }
 }

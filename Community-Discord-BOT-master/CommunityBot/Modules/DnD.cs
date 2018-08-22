@@ -1,4 +1,5 @@
 ﻿using CommunityBot.Features.DnDHelper;
+using CommunityBot.Features.DnDHelper.Models;
 using CommunityBot.Features.GlobalAccounts;
 using Discord;
 using Discord.Commands;
@@ -512,6 +513,45 @@ namespace CommunityBot.Modules
         public async Task RollStats()
         {
             var embed = new EmbedBuilder();
+            embed.Description += "**4d6(dropping lowest die) stats**\n";
+            Dictionary<string, int> stats3d6 = new Dictionary<string, int> {
+                { "Strength", RollSingleStat() },
+                { "Dexterity", RollSingleStat() },
+                { "Constitution", RollSingleStat() },
+                { "Intelligence", RollSingleStat() },
+                { "Wisdom", RollSingleStat() },
+                { "Charisma", RollSingleStat() }
+            };
+            foreach (KeyValuePair<string, int> item in stats3d6)
+            {
+                embed.Description += $"{item.Key}:{item.Value}\n";
+            }
+            embed.Description += "\n**1d20 stats**\n";
+            Dictionary<string, int> stats1d20 = new Dictionary<string, int> {
+                { "Strength", randy.Next(1,20) },
+                { "Dexterity", randy.Next(1,20) },
+                { "Constitution", randy.Next(1,20) },
+                { "Intelligence", randy.Next(1,20) },
+                { "Wisdom", randy.Next(1,20) },
+                { "Charisma", randy.Next(1,20) }
+            };
+            foreach (KeyValuePair<string, int> item in stats1d20)
+            {
+                embed.Description += $"{item.Key}:{item.Value}\n";
+            }
+            embed.WithTitle("Da Stats:");
+            embed.WithColor(170, 5, 120);
+
+            await Context.Channel.SendMessageAsync("", embed: embed.Build());
+        }
+
+        [Command("Roll Stats Full"), Remarks("Generates Random stats")]
+        [Alias("Stats Full", "stats full")]
+        public async Task RollStatsFull()
+        {
+            var embed = new EmbedBuilder();
+            embed.Description += $"Race: {new RandomRaceGenerator().Race }\n";
+            embed.Description += $"Class: {new RandomClassGenerator().Class }\n\n";
             embed.Description += "**4d6(dropping lowest die) stats**\n";
             Dictionary<string, int> stats3d6 = new Dictionary<string, int> {
                 { "Strength", RollSingleStat() },
