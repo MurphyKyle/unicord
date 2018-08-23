@@ -211,18 +211,58 @@ namespace CommunityBot.Modules
 		}
 
 		/// <summary>
-		/// The bot has to be able to parse from JSON formatted text and display JSON objects in an easier to read way.
+		/// This parses an entire inventory object
+		/// The bot has to be able to parse from JSON formatted text
 		/// </summary>
-		[Command("invaddjson"), Alias("addjson")]
+		[Command("setjsoninventory"), Alias("setjsoninv")]
 		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
 		[Cooldown(5)]
-		public async Task AddJson([Remainder] string jsonText)
+		public async Task SetInvFromJson([Remainder] string jsonText)
 		{
 			// get the calling user
 			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
 			userAccount.Inv = JsonConvert.DeserializeObject<Inventory>(jsonText);
 
 			await Context.Channel.SendMessageAsync("RIGHTEOUS, we got itams!");
+		}
+
+		/// <summary>
+		/// This parses an entire list of items
+		/// The bot has to be able to parse from JSON formatted text
+		/// </summary>
+		[Command("invaddjsonitemlist"), Alias("addjsonitems")]
+		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
+		[Cooldown(5)]
+		public async Task AddJsonItemList([Remainder] string jsonText)
+		{
+			string msg = "";
+
+			// get the calling user
+			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+
+			Item[] itams = JsonConvert.DeserializeObject<Item[]>(jsonText);
+			userAccount.Inv.AddItem(itams);
+			msg += "RIGHTEOUS, we got itams!";
+
+
+			await Context.Channel.SendMessageAsync(msg);
+		}
+
+		/// <summary>
+		/// This parses a single item
+		/// The bot has to be able to parse from JSON formatted text
+		/// </summary>
+		[Command("invaddjsonitem"), Alias("addjsonitem")]
+		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
+		[Cooldown(5)]
+		public async Task AddJsonItem([Remainder] string jsonText)
+		{
+			// get the calling user
+			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+			Item itm = JsonConvert.DeserializeObject<Item>(jsonText);
+			userAccount.Inv.AddItem(itm);
+
+			await Context.Channel.SendMessageAsync("GR00VY new itam we got there!");
 		}
 
 		/// <summary>
