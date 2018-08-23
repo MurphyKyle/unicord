@@ -514,7 +514,7 @@ namespace CommunityBot.Modules
             var embed = new EmbedBuilder();
             embed.WithDescription("__**The Loot**__\n");
             string s = (TreasureGenerator.GetLoot(partyLevel));
-            embed.Description +=  (string.IsNullOrWhiteSpace(s) ? "Nothing" : s ) + "\n\n";
+            embed.Description +=  (string.IsNullOrWhiteSpace(s) ? "A big fat pile of nothing" : s ) + "\n\n";
             embed.WithTitle("Your party found:");
             embed.WithColor(0, 255, 0);
 
