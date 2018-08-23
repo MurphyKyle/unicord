@@ -509,14 +509,12 @@ namespace CommunityBot.Modules
 
         [Command("Treasure"), Remarks("Generates a truly random loot hoard")]
         [Alias("Loot", "loot")]
-        public async Task GenerateLoot(int partyLevel, int partySize = 1)
+        public async Task GenerateLoot(int partyLevel)
         {
             var embed = new EmbedBuilder();
             embed.WithDescription("__**The Loot**__\n");
-            for (int i = randy.Next(1, partySize); i > 0; i--)
-            {
-                embed.Description += (DnDHelperClass.ParseMagicItems(partyLevel) + "\n\n");
-            }
+            string s = (TreasureGenerator.GetLoot(partyLevel));
+            embed.Description +=  (string.IsNullOrWhiteSpace(s) ? "Nothing" : s ) + "\n\n";
             embed.WithTitle("Your party found:");
             embed.WithColor(0, 255, 0);
 

@@ -75,30 +75,26 @@ namespace CommunityBot.Features.DnDHelper
                 item.Rarity = at["rarity"];
                 item.Type = at["type"];
                 item.Page = at["page"];
-                if (cl < 5)
+                if (cl == 1)//Minor Magic items Common/Uncommon
                 {
                     if (at["rarity"] == "Uncommon" || at["rarity"] == "Common")
                     {
                         items.Add(item);
                     }
                 }
-                else if (cl < 11)
+                else if (cl == 2)//medium magic items uncommon/rare
                 {
-                    if (at["rarity"] == "Uncommon" || at["rarity"] == "Common" || at["rarity"] == "Rare")
+                    if (at["rarity"] == "Uncommon" || at["rarity"] == "Rare")
                     {
                         items.Add(item);
                     }
                 }
-                else if (cl < 17)
+                else //major magic items very rare/legendary
                 {
-                    if (at["rarity"] == "Uncommon" || at["rarity"] == "Common" || at["rarity"] == "Rare" || at["rarity"] == "Very Rare")
+                    if (at["rarity"] == "Legendary" || at["rarity"] == "Very Rare")
                     {
                         items.Add(item);
                     }
-                }
-                else
-                {
-                    items.Add(item);
                 }
             }
             Random randy = new Random();
