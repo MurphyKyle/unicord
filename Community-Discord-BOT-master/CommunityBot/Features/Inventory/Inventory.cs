@@ -115,11 +115,14 @@ namespace CommunityBot.Features.Inventory
 		{
 			foreach (string att in attributeAry)
 			{
-				string[] attKeyVal = att
-					.ToLowerInvariant()
-					.Trim(',')
-					.Split(":");
-				dict.Add(attKeyVal[0].Trim(), attKeyVal[1].Trim());
+				if (!string.IsNullOrEmpty(att.Trim()))
+				{
+					string[] attKeyVal = att
+						.ToLowerInvariant()
+						.Trim(',')
+						.Split(":");
+					dict.Add(attKeyVal[0].Trim(), attKeyVal[1].Trim());
+				}
 			}
 		}
 
