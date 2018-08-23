@@ -51,6 +51,20 @@ namespace CommunityBot.Features.Inventory
 		}
 
 		/// <summary>
+		/// Tries to add an array of items to the user's inventory
+		/// </summary>
+		/// <param name="items">Array of items</param>
+		/// <returns>bool indicating success or failure</returns>
+		public bool AddItem(params Item[] items)
+		{
+			foreach (var item in items)
+			{
+				Itams.Add(item);
+			}
+			return true;
+		}
+
+		/// <summary>
 		/// Tries to add an item to the user's inventory without any attributes
 		/// </summary>
 		/// <param name="name"></param>
@@ -101,11 +115,14 @@ namespace CommunityBot.Features.Inventory
 		{
 			foreach (string att in attributeAry)
 			{
-				string[] attKeyVal = att
-					.ToLowerInvariant()
-					.Trim(',')
-					.Split(":");
-				dict.Add(attKeyVal[0].Trim(), attKeyVal[1].Trim());
+				if (!string.IsNullOrEmpty(att.Trim()))
+				{
+					string[] attKeyVal = att
+						.ToLowerInvariant()
+						.Trim(',')
+						.Split(":");
+					dict.Add(attKeyVal[0].Trim(), attKeyVal[1].Trim());
+				}
 			}
 		}
 

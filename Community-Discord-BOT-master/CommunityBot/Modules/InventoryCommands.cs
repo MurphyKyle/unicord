@@ -32,7 +32,7 @@ namespace CommunityBot.Modules
 		/// <summary>
 		/// The bot will take in a command like “~inventory” and print all their items to the user.
 		/// </summary>
-		[Command("inventory"), Alias("inv")]
+		[Command("inv")]
 		[Summary("DMs your inventory items to you <(inv)entory>")]
 		[Cooldown(10)]
 		public async Task GetInventory()
@@ -66,7 +66,7 @@ namespace CommunityBot.Modules
 		/// <summary>
 		/// The bot will take in a command like “~addItem (name) (description) (att1:val1)...” to their own database that can persist that item.The key will be what the user has to search by to get their item.
 		/// </summary>
-		[Command("invadditem"), Alias("additem")]
+		[Command("additem")]
 		[Summary("Adds an item to your inventory (name~ description~ attName1:attValue1~ attName2:attValue2~ ...)")]
 		[Cooldown(5)]
 		public async Task AddItem([Remainder] string data)
@@ -77,6 +77,7 @@ namespace CommunityBot.Modules
 
 			try
 			{
+				data = "Kyle~ Cool dud~ person:true~ notPerson:alsotrue~";
 				List<string> atts = data.Split('~').ToList();
 				string name = atts[0].Trim();
 				string description = atts[1].Trim();
@@ -101,7 +102,7 @@ namespace CommunityBot.Modules
 		/// <summary>
 		/// The bot will take in a command like “~findItem(name)” and find that item from their database and return it to them by printing it.	
 		/// </summary>
-		[Command("invfinditem"), Alias("finditem")]
+		[Command("finditem")]
 		[Summary("Finds an item in the inventory by its name")]
 		[Cooldown(5)]
 		public async Task FindItem(string name)
@@ -145,7 +146,7 @@ namespace CommunityBot.Modules
 		/// <summary>
 		/// The bot will take in a command like “~delItem (name)” and find that item from their inventory and delete it.
 		/// </summary>
-		[Command("invdelitem"), Alias("delitem")]
+		[Command("delitem")]
 		[Summary("Deletes an item in the inventory by its name")]
 		[Cooldown(5)]
 		public async Task DeleteItem(string name)
@@ -178,7 +179,7 @@ namespace CommunityBot.Modules
 		/// <summary>
 		/// The bot will take in a command like “~edititem (name) (propertyName:newValue) and will update the key’s data to the newly passed data.
 		/// </summary>
-		[Command("invedititem"), Alias("edititem")]
+		[Command("edititem")]
 		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
 		[Cooldown(5)]
 		public async Task EditItem([Remainder] string data)
@@ -211,12 +212,13 @@ namespace CommunityBot.Modules
 		}
 
 		/// <summary>
-		/// The bot has to be able to parse from JSON formatted text and display JSON objects in an easier to read way.
+		/// This parses an entire inventory object
+		/// The bot has to be able to parse from JSON formatted text
 		/// </summary>
-		[Command("invaddjson"), Alias("addjson")]
+		[Command("setjsoninv")]
 		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
 		[Cooldown(5)]
-		public async Task AddJson([Remainder] string jsonText)
+		public async Task SetInvFromJson([Remainder] string jsonText)
 		{
 			// get the calling user
 			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
@@ -226,9 +228,48 @@ namespace CommunityBot.Modules
 		}
 
 		/// <summary>
+		/// This parses an entire list of items
+		/// The bot has to be able to parse from JSON formatted text
+		/// </summary>
+		[Command("addjsonitems")]
+		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
+		[Cooldown(5)]
+		public async Task AddJsonItemList([Remainder] string jsonText)
+		{
+			string msg = "";
+
+			// get the calling user
+			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+
+			Item[] itams = JsonConvert.DeserializeObject<Item[]>(jsonText);
+			userAccount.Inv.AddItem(itams);
+			msg += "RIGHTEOUS, we got itams!";
+
+
+			await Context.Channel.SendMessageAsync(msg);
+		}
+
+		/// <summary>
+		/// This parses a single item
+		/// The bot has to be able to parse from JSON formatted text
+		/// </summary>
+		[Command("addjsonitem")]
+		[Summary("Edits an item in the inventory by its name, using a key:value pair to update information")]
+		[Cooldown(5)]
+		public async Task AddJsonItem([Remainder] string jsonText)
+		{
+			// get the calling user
+			userAccount = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+			Item itm = JsonConvert.DeserializeObject<Item>(jsonText);
+			userAccount.Inv.AddItem(itm);
+
+			await Context.Channel.SendMessageAsync("GR00VY new itam we got there!");
+		}
+
+		/// <summary>
 		/// The bot will take in a command like “~inventory” and print all their items to the user.
 		/// </summary>
-		[Command("invgetjson"), Alias("getjson")]
+		[Command("invgetjson")]
 		[Summary("Gets the entire inventory in JSON or just the item with the given name")]
 		[Cooldown(10)]
 		public async Task GetJson([Remainder] string name = null)
