@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CommunityBot.Modules
@@ -72,6 +73,30 @@ namespace CommunityBot.Modules
             }
 
             await Context.Channel.SendMessageAsync("bye");
+
+        }
+
+        [Command("showFavs")]
+        public async Task ShowFavs()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            var account = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+            
+            foreach(var keyValue in account.Favorites)
+            {
+                stringBuilder.Append($" {keyValue.Key}: {keyValue.Value}\n");
+            }
+            
+            await Context.Channel.SendMessageAsync(stringBuilder.ToString());
+        }
+
+        [Command("clearFavs")]
+        public async Task ClearFavs()
+        {
+            var account = GlobalUserAccounts.GetUserAccount(Context.User.Id);
+            account.Favorites.Clear();
+            GlobalUserAccounts.SaveAccounts(account.Id);
+            await Context.Channel.SendMessageAsync("Favorites Cleared");
 
         }
 
