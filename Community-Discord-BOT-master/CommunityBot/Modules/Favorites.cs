@@ -21,7 +21,7 @@ namespace CommunityBot.Modules
         /// <param name="site">the website the user wants to add</param>
         /// <param name="input">the phrase the user enters to access it</param>
         /// <returns></returns>
-        [Command("addFav"), Summary("Adds a favorite link to the user's favorites list using a phrase and a link")]
+        [Command("addFav"), Summary("Adds a favorite link to the user's favorites list using a phrase and a link. For example addFav \"website\" \"phrase\"")]
         public async Task AddFavorite(string site, [Remainder]string input)
         {
             string responce = "";
@@ -46,7 +46,7 @@ namespace CommunityBot.Modules
         /// </summary>
         /// <param name="phrase"></param>
         /// <returns></returns>
-        [Command("fetchFav"), Summary("Gets a user's favorite at the specified phrase location")]
+        [Command("fetchFav"), Summary("Gets a user's favorite at the specified phrase location. For example fetchFav \"phrase\"")]
         public async Task FetchLink([Remainder]string phrase)
         {
             string responce = "";
@@ -61,7 +61,7 @@ namespace CommunityBot.Modules
 
         }
 
-        [Command("rmFav"), Summary("Removes a favorite link from the user's favorites list using a phrase")]
+        [Command("rmFav"), Summary("Removes a favorite link from the user's favorites list using a phrase. For example rmFav \"phrase\"")]
         public async Task RemoveFav([Remainder]string phrase)
         {
             var account = GlobalUserAccounts.GetUserAccount(Context.User.Id);
@@ -72,11 +72,11 @@ namespace CommunityBot.Modules
                 GlobalUserAccounts.SaveAccounts(Context.User.Id);
             }
 
-            await Context.Channel.SendMessageAsync("bye");
+            await Context.Channel.SendMessageAsync($"Removed: {phrase}");
 
         }
 
-        [Command("showFavs")]
+        [Command("showFavs"), Summary("Show the user's favorites saved")]
         public async Task ShowFavs()
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -90,7 +90,7 @@ namespace CommunityBot.Modules
             await Context.Channel.SendMessageAsync(stringBuilder.ToString());
         }
 
-        [Command("clearFavs")]
+        [Command("clearFavs"), Summary("Removes all of the user's favorites they saved")]
         public async Task ClearFavs()
         {
             var account = GlobalUserAccounts.GetUserAccount(Context.User.Id);
