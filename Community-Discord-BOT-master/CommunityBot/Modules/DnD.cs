@@ -65,7 +65,14 @@ namespace CommunityBot.Modules
                 case "strength":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("str", value);
+                        if (account.CharacterSheet.ContainsKey("str"))
+                        {
+                            account.CharacterSheet["str"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("str", value);
+                        }
                         retVal += $"{value} strength!";
                     }
                     else
@@ -79,7 +86,14 @@ namespace CommunityBot.Modules
                 case "dexterity":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("dex", value);
+                        if (account.CharacterSheet.ContainsKey("dex"))
+                        {
+                            account.CharacterSheet["dex"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("dex", value);
+                        }
                         retVal += $"{value} dexterity!";
                     }
                     else
@@ -93,7 +107,14 @@ namespace CommunityBot.Modules
                 case "constitution":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("con", value);
+                        if (account.CharacterSheet.ContainsKey("con"))
+                        {
+                            account.CharacterSheet["con"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("con", value);
+                        }
                         retVal += $"{value} constitution!";
                     }
                     else
@@ -107,8 +128,15 @@ namespace CommunityBot.Modules
                 case "intelligence":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("int", value);
-                        retVal += $"{value} intelligence!";
+                        if (account.CharacterSheet.ContainsKey("int"))
+                        {
+                            account.CharacterSheet["int"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("int", value);
+                        }
+                        retVal += $"{value} intelleigence!";
                     }
                     else
                     {
@@ -121,7 +149,14 @@ namespace CommunityBot.Modules
                 case "wisdom":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("wis", value);
+                        if (account.CharacterSheet.ContainsKey("wis"))
+                        {
+                            account.CharacterSheet["wis"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("wis", value);
+                        }
                         retVal += $"{value} wisdom!";
                     }
                     else
@@ -135,7 +170,14 @@ namespace CommunityBot.Modules
                 case "charisma":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("cha", value);
+                        if (account.CharacterSheet.ContainsKey("cha"))
+                        {
+                            account.CharacterSheet["cha"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("cha", value);
+                        }
                         retVal += $"{value} charisma!";
                     }
                     else
@@ -148,7 +190,14 @@ namespace CommunityBot.Modules
                 case "a":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("armor", value);
+                        if (account.CharacterSheet.ContainsKey("armor"))
+                        {
+                            account.CharacterSheet["armor"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("armor", value);
+                        }
                         retVal += $"{value} as an armor!";
                     }
                     else
@@ -162,7 +211,14 @@ namespace CommunityBot.Modules
                     Regex regex = new Regex("[1-9][0-9]*[d|D][1-9][0-9]*");
                     if (regex.IsMatch(value))
                     {
-                        account.CharacterSheet.Add("weapon", value.ToLower());
+                        if (account.CharacterSheet.ContainsKey("weapon"))
+                        {
+                            account.CharacterSheet["weapon"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("weapon", value.ToLower());
+                        }
                         retVal += $"{value} as a weapon!";
                     }
                     else
@@ -173,14 +229,28 @@ namespace CommunityBot.Modules
                     break;
                 case "name":
                 case "n":
-                    account.CharacterSheet.Add("name", value);
+                    if (account.CharacterSheet.ContainsKey("name"))
+                    {
+                        account.CharacterSheet["name"] = value;
+                    }
+                    else
+                    {
+                        account.CharacterSheet.Add("name", value);
+                    }
                     retVal += $"{value} as your character's name!";
                     break;
                 case "hp":
                 case "h":
                     if (int.TryParse(value, out test))
                     {
-                        account.CharacterSheet.Add("hp", value);
+                        if (account.CharacterSheet.ContainsKey("hp"))
+                        {
+                            account.CharacterSheet["hp"] = value;
+                        }
+                        else
+                        {
+                            account.CharacterSheet.Add("hp", value);
+                        }
                         retVal += $"{value} as your character's hp!";
                     }
                     else
@@ -514,7 +584,7 @@ namespace CommunityBot.Modules
             var embed = new EmbedBuilder();
             embed.WithDescription("__**The Loot**__\n");
             string s = (TreasureGenerator.GetLoot(partyLevel));
-            embed.Description +=  (string.IsNullOrWhiteSpace(s) ? "A big fat pile of nothing" : s ) + "\n\n";
+            embed.Description += (string.IsNullOrWhiteSpace(s) ? "A big fat pile of nothing" : s) + "\n\n";
             embed.WithTitle("Your party found:");
             embed.WithColor(0, 255, 0);
 
