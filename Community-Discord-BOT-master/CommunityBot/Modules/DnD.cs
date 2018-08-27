@@ -15,7 +15,7 @@ namespace CommunityBot.Modules
     {
         private Random randy = new Random();
         [Command("Encounter"), Summary("Generates a random ancounter given the parameters"), Remarks("Cr = Challenge Rating (Difficulty) and amount = number of monsters")]
-        [Alias("Fight", "fight")]
+        [Alias("Fight", "fight", "re")]
         public async Task GenerateFight(string cr, string amount = "1")
         {
             int j = 0;
@@ -492,7 +492,7 @@ namespace CommunityBot.Modules
         }
 
         [Command("Encounter"), Remarks("Generates a truly random encounter")]
-        [Alias("Fight", "fight")]
+        [Alias("Fight", "fight", "re")]
         public async Task GenerateFight()
         {
             var embed = new EmbedBuilder();
@@ -508,7 +508,7 @@ namespace CommunityBot.Modules
         }
 
         [Command("Treasure"), Remarks("Generates a truly random loot hoard")]
-        [Alias("Loot", "loot")]
+        [Alias("Loot", "loot", "tr")]
         public async Task GenerateLoot(int partyLevel)
         {
             var embed = new EmbedBuilder();
@@ -522,7 +522,7 @@ namespace CommunityBot.Modules
         }
 
         [Command("RollStats"), Remarks("Generates Random stats")]
-        [Alias("Stats", "stats")]
+        [Alias("Stats", "stats", "rs")]
         public async Task RollStats()
         {
             var embed = new EmbedBuilder();
@@ -559,7 +559,7 @@ namespace CommunityBot.Modules
         }
 
         [Command("Roll Stats Full"), Remarks("Generates Random stats with race and class")]
-        [Alias("Stats Full", "stats full")]
+        [Alias("Stats Full", "stats full", "rsf")]
         public async Task RollStatsFull()
         {
             var embed = new EmbedBuilder();
@@ -668,7 +668,7 @@ namespace CommunityBot.Modules
         }
 
         [Command("Boss"), Remarks("Generates a boss with a difficulty modifier")]
-        [Alias("boss", "big boy")]
+        [Alias("boss", "big boy","rb")]
         public async Task Boss(int difficulty = 1)
         {
             var embed = new EmbedBuilder();
