@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CommunityBot.Modules
@@ -16,20 +17,39 @@ namespace CommunityBot.Modules
     {
         private Dictionary<string, List<Tuple<string, string>>> FoodItemsAndPrices = new Dictionary<string, List<Tuple<string, string>>>();
 
-        [Command("priceFor")]
-        [Summary("You can check the price of the top 5 products from stores like Walmart, Harmons, Sam's: ex. priceFor \"name of item\"")]
+        [Command("priceFor"), Summary("You can check the price of the top 5 products from stores like Walmart, Harmons, Sam's: ex. priceFor \"name of item\"")]
         public async Task FindPriceForFood([Remainder]string food)
         {
+            StringBuilder sb = new StringBuilder();
             var walmartHtml = GetRoot($"https://www.walmart.com/search/?query={food}&cat_id=0");
             var targetJson = GetJSONRoot($"https://redsky.target.com/v1/plp/search/?count=24&offset=0&keyword={food}&default_purchasability_filter=true&store_ids=2641%2C2609%2C768%2C1751%2C1750%2C2150%2C1752%2C2123%2C1755%2C1814%2C1753%2C1754&visitorId=016563622E180201AB289F871F207095&pageId=%2Fs%2Fcheese&channel=web");
             GetWalmartTop5Products(walmartHtml);
             GetTop5TargetProducts(targetJson);
-
+            
             var embed = new EmbedBuilder();
+            embed.WithDescription($"Walmart:\n {GetFoodItemsString("Walmart")}\n Target:\n {GetFoodItemsString("Target")}");
             embed.WithTitle($"Top 5 products for {food}");
             embed.WithColor(240, 98, 16);
 
             await Context.Channel.SendMessageAsync("", embed: embed.Build());
+        }
+
+        private string GetFoodItemsString(string key)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (FoodItemsAndPrices.ContainsKey(key))
+            {
+                foreach (var priceItemTuple in FoodItemsAndPrices[key])
+                {
+                    sb.Append($"{priceItemTuple.Item1}: {priceItemTuple.Item2}\n");
+                }
+            }
+            else
+            {
+                sb.Append("Either the price or item was not found");
+            }
+           
+            return sb.ToString();
         }
 
         private void GetWalmartTop5Products(HtmlDocument html)
@@ -68,24 +88,22 @@ namespace CommunityBot.Modules
             {
                 JToken token = items[index];
                 index++;
-                var itemAttributes = token.Children();
-                var offerPriceChidren = itemAttributes.ElementAt(27).First;
-                if (offerPriceChidren.ToString().Equals("Only At Target"))
+                string s = token.ToString();
+                MatchCollection matchFormattedPrice = Regex.Matches(token.ToString(), @"""formatted_price"": "".*""");
+                MatchCollection matchName = Regex.Matches(token.ToString(), @"""title"": "".*""");
+                MatchCollection matchPrice = Regex.Matches(token.ToString(), @"""price"": .*,");
+                if (matchPrice.Count == 0)
                 {
                     continue;
                 }
-                //priceKeyValue is the string representation of "price": ($0.00).
-                string priceKeyValue = offerPriceChidren.ElementAt(0).ToString();
-                /*
-                 *  We take priceKeyValue and split it on the ':' which makes it an array. 
-                 *  Then we get the price string from index 1, and trim the whitespace.
-                 */
-                string productPrice = priceKeyValue.Split(':')[1].Trim();
-                // We split the itemAttributes so we can separate the titel from the unwanted data.
-                string[] splitItemArray = itemAttributes.ElementAt(3).ToString().Split('"');
-                // The product name is always on index 3 with the way target's JSON file is formatted.
-                string productName = splitItemArray[3];
-
+                string formmattedPriceString = matchFormattedPrice[0].Value.Split(": ")[1];
+                string priceString = matchPrice[0].Value.Split(": ")[1];
+                string productPrice = $"${DecideProductTargetPrice(priceString, formmattedPriceString)}";
+                string productName = matchName[0].Value.Split(": ")[1];
+                if(productPrice.Equals(""))
+                {
+                    continue;
+                }
                 if (!FoodItemsAndPrices.ContainsKey("Target"))
                 {
                     FoodItemsAndPrices.Add("Target", new List<Tuple<string, string>>() { new Tuple<string, string>(productName, productPrice) });
@@ -117,6 +135,19 @@ namespace CommunityBot.Modules
             return jsonObject;
         }
 
+        private string DecideProductTargetPrice(string priceString, string formmattedPriceString)
+        {
+            string productPrice = "";
+            if(!priceString.Equals("0.0") && !priceString.Equals("\"see store for price\""))
+            {
+                productPrice = priceString;
+            }
+            else if(!formmattedPriceString.Equals("0.0") && !formmattedPriceString.Equals("\"see store for price\""))
+            {
+                productPrice = formmattedPriceString;
+            }
+            return productPrice;
+        }
        
 
     }
