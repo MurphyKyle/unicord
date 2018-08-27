@@ -11,11 +11,11 @@ namespace CommunityBot.Features.DnDHelper
 
         public static string GetLoot(int partyLevel)
         {
-            int selection = randy.Next(1,100);
+            int selection = randy.Next(1, 100);
             string retVal = "";
             foreach (KeyValuePair<NumberRange, string[]> item in Constants.TreasureCatalog[partyLevel.ToString() + "-c"])
             {
-                if (item.Key==selection)
+                if (item.Key == selection)
                 {
                     retVal += GetCoin(item.Value);
                 }
@@ -41,7 +41,7 @@ namespace CommunityBot.Features.DnDHelper
 
         public static string GetCoin(string[] parms)
         {
-            if(parms != null)
+            if (parms != null)
             {
                 int total = 0;
                 for (int i = 0; i < Int32.Parse(parms[0]); i++)
@@ -55,13 +55,13 @@ namespace CommunityBot.Features.DnDHelper
             {
                 return "";
             }
-            
+
         }
 
         public static string GetGoods(string[] parms)
         {
             string retVal = "";
-            if(parms != null)
+            if (parms != null)
             {
                 for (int i = 0; i < Int32.Parse(parms[0]); i++)
                 {
@@ -81,26 +81,31 @@ namespace CommunityBot.Features.DnDHelper
         public static string GetItems(string[] parms)
         {
             string retVal = "";
-            if(parms != null)
+            if (parms != null)
             {
+                int total = 0;
                 for (int i = 0; i < Int32.Parse(parms[0]); i++)
-            {
-                switch (parms[2])
                 {
-                    case "mundane":
-                        retVal += GetMundaneItem();
-                        break;
-                    case "minor":
-                        retVal += DnDHelper.DnDHelperClass.ParseMagicItems(1);
-                        break;
-                    case "medium":
-                        retVal += DnDHelper.DnDHelperClass.ParseMagicItems(2);
-                        break;
-                    case "major":
-                        retVal += DnDHelper.DnDHelperClass.ParseMagicItems(3);
-                        break;
+                    total += randy.Next(1, Int32.Parse(parms[1]));
                 }
-            }
+                for (int i = 0; i < total; i++)
+                {
+                    switch (parms[3])
+                    {
+                        case "mundane":
+                            retVal += GetMundaneItem();
+                            break;
+                        case "minor":
+                            retVal += DnDHelper.DnDHelperClass.ParseMagicItems(1) + "\n";
+                            break;
+                        case "medium":
+                            retVal += DnDHelper.DnDHelperClass.ParseMagicItems(2) + "\n";
+                            break;
+                        case "major":
+                            retVal += DnDHelper.DnDHelperClass.ParseMagicItems(3) + "\n";
+                            break;
+                    }
+                }
             }
             return retVal + "\n";
         }
@@ -109,7 +114,7 @@ namespace CommunityBot.Features.DnDHelper
         {
             int selection = randy.Next(1, 100);
             string retVal = "";
-            if (new NumberRange(1,17) == selection)
+            if (new NumberRange(1, 17) == selection)
             {
                 selection = randy.Next(1, 100);
                 foreach (KeyValuePair<NumberRange, string[]> item in Constants.AlchemyCatalog)
@@ -154,7 +159,7 @@ namespace CommunityBot.Features.DnDHelper
                     }
                 }
             }
-            
+
             return retVal;
         }
 
@@ -176,7 +181,7 @@ namespace CommunityBot.Features.DnDHelper
         {
             int selection = randy.Next(1, 100);
             string retVal = "";
-            foreach (KeyValuePair<NumberRange,string[][]> item in Constants.GemCatalog)
+            foreach (KeyValuePair<NumberRange, string[][]> item in Constants.GemCatalog)
             {
                 if (item.Key == selection)
                 {

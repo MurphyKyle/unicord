@@ -53,8 +53,8 @@ namespace CommunityBot
             {"1-i",new Dictionary<NumberRange, string[]>()
                 {
                     {new NumberRange(1,71), null},
-                    {new NumberRange(72,95), new string[]{ "1","1","mundane"} },
-                    {new NumberRange(96,100), new string[]{ "1","1","minor" }}
+                    {new NumberRange(72,95), new string[]{ "1","1", "1","mundane"} },
+                    {new NumberRange(96,100), new string[]{ "1","1", "1", "minor" }}
                 }
             },
             {"2-c",new Dictionary<NumberRange, string[]>()
@@ -76,8 +76,8 @@ namespace CommunityBot
             {"2-i",new Dictionary<NumberRange, string[]>()
                 {
                     {new NumberRange(1,49), null},
-                    {new NumberRange(50,85), new string[]{ "1","3","mundane"} },
-                    {new NumberRange(86,100), new string[]{ "1","1","minor" }}
+                    {new NumberRange(50,85), new string[]{ "1","3", "2", "mundane"} },
+                    {new NumberRange(86,100), new string[]{ "1","1", "2", "minor" }}
                 }
             },
             {"3-c",new Dictionary<NumberRange, string[]>()
@@ -99,8 +99,8 @@ namespace CommunityBot
             {"3-i",new Dictionary<NumberRange, string[]>()
                 {
                     {new NumberRange(1,49), null},
-                    {new NumberRange(50,79), new string[]{ "1","3","mundane"} },
-                    {new NumberRange(80,100), new string[]{ "1","1","minor" }}
+                    {new NumberRange(50,79), new string[]{ "1","3", "3", "mundane"} },
+                    {new NumberRange(80,100), new string[]{ "1","1", "3","minor" }}
                 }
             },
             {"4-c",new Dictionary<NumberRange, string[]>()
@@ -122,8 +122,8 @@ namespace CommunityBot
             {"4-i",new Dictionary<NumberRange, string[]>()
                 {
                     {new NumberRange(1,42), null},
-                    {new NumberRange(43,62), new string[]{ "1","4","mundane"} },
-                    {new NumberRange(63,100), new string[]{ "1","3","minor" }}
+                    {new NumberRange(43,62), new string[]{ "1","4","4", "mundane"} },
+                    {new NumberRange(63,100), new string[]{ "1","3","4","minor" }}
                 }
             },
             {"5-c",new Dictionary<NumberRange, string[]>()
@@ -145,8 +145,8 @@ namespace CommunityBot
             {"5-i",new Dictionary<NumberRange, string[]>()
                 {
                     {new NumberRange(1,57), null},
-                    {new NumberRange(58,67), new string[]{ "1","4","mundane"} },
-                    {new NumberRange(68,100), new string[]{ "1","3", "minor" }}
+                    {new NumberRange(58,67), new string[]{ "1","4", "5", "mundane"} },
+                    {new NumberRange(68,100), new string[]{ "1","3", "5", "minor" }}
                 }
             },
             {"6-c",new Dictionary<NumberRange, string[]>()
@@ -168,9 +168,9 @@ namespace CommunityBot
             {"6-i",new Dictionary<NumberRange, string[]>()
                 {
                     {new NumberRange(1,51), null},
-                    {new NumberRange(55,59), new string[]{ "1","4","mundane"} },
-                    {new NumberRange(60,99), new string[]{ "1","3", "minor" }},
-                    {new NumberRange(100,100), new string[]{ "1","1", "medium" }}
+                    {new NumberRange(55,59), new string[]{ "1","4","6","mundane"} },
+                    {new NumberRange(60,99), new string[]{ "1","3", "6", "minor" }},
+                    {new NumberRange(100,100), new string[]{ "1","1","6", "medium" }}
 
                 }
             },
@@ -193,8 +193,8 @@ namespace CommunityBot
             { "7-i", new Dictionary<NumberRange, string[]>()
                 {
                     { new NumberRange(1, 51), null},
-                    { new NumberRange(52, 97), new string[] { "1", "3", "minor" } },
-                    { new NumberRange(98, 100), new string[] { "1", "1", "medium" } }
+                    { new NumberRange(52, 97), new string[] { "1", "3", "7", "minor" } },
+                    { new NumberRange(98, 100), new string[] { "1", "1", "7", "medium" } }
 
                 }
             },
