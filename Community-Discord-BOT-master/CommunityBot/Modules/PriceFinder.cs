@@ -17,15 +17,16 @@ namespace CommunityBot.Modules
     {
         private Dictionary<string, List<Tuple<string, string>>> FoodItemsAndPrices = new Dictionary<string, List<Tuple<string, string>>>();
 
-        [Command("priceFor"), Summary("You can check the price of the top 5 products from stores like Walmart, Harmons, Sam's: ex. priceFor \"name of item\"")]
+        [Command("priceFor"), Alias("pricefor", "pf", "price for"), Summary("You can check the price of the top 5 products from stores like Walmart, Harmons, Sam's: ex. priceFor \"name of item\"")]
         public async Task FindPriceForFood([Remainder]string food)
         {
             StringBuilder sb = new StringBuilder();
+            food = food.Contains(" ") ? food.Replace(" ", "%20") : food;
             var walmartHtml = GetRoot($"https://www.walmart.com/search/?query={food}&cat_id=0");
             var targetJson = GetJSONRoot($"https://redsky.target.com/v1/plp/search/?count=24&offset=0&keyword={food}&default_purchasability_filter=true&store_ids=2641%2C2609%2C768%2C1751%2C1750%2C2150%2C1752%2C2123%2C1755%2C1814%2C1753%2C1754&visitorId=016563622E180201AB289F871F207095&pageId=%2Fs%2Fcheese&channel=web");
             GetWalmartTop5Products(walmartHtml);
             GetTop5TargetProducts(targetJson);
-            
+
             var embed = new EmbedBuilder();
             embed.WithDescription($"Walmart:\n {GetFoodItemsString("Walmart")}\n Target:\n {GetFoodItemsString("Target")}");
             embed.WithTitle($"Top 5 products for {food}");
@@ -48,7 +49,7 @@ namespace CommunityBot.Modules
             {
                 sb.Append("Either the price or item was not found");
             }
-           
+
             return sb.ToString();
         }
 
@@ -63,11 +64,21 @@ namespace CommunityBot.Modules
             }
             middleItems.Insert(0, firstItem);
             middleItems.Add(lastItem);
-            foreach(var foodNode in middleItems)
+            foreach (var foodNode in middleItems)
             {
                 var productName = foodNode.SelectSingleNode(".//*[@class=\"product-title-link line-clamp line-clamp-2\"]").InnerText;
-                var productPrice = foodNode.SelectSingleNode(".//*[@class=\"price display-inline-block arrange-fit price price-main\"]").InnerText;      
-                if(!FoodItemsAndPrices.ContainsKey("Walmart"))
+                string productPrice = null;
+                try
+                {
+
+                    productPrice = foodNode.SelectSingleNode(".//*[@class=\"price display-inline-block arrange-fit price price-main\"]").InnerText;
+                }
+                catch(Exception e)
+                {
+                    productPrice = "Purchase in Store";
+                }
+
+                if (!FoodItemsAndPrices.ContainsKey("Walmart"))
                 {
                     FoodItemsAndPrices.Add("Walmart", new List<Tuple<string, string>>() { new Tuple<string, string>(productName, productPrice) });
                 }
@@ -99,8 +110,9 @@ namespace CommunityBot.Modules
                 string formmattedPriceString = matchFormattedPrice[0].Value.Split(": ")[1];
                 string priceString = matchPrice[0].Value.Split(": ")[1];
                 string productPrice = $"${DecideProductTargetPrice(priceString, formmattedPriceString)}";
-                string productName = matchName[0].Value.Split(": ")[1];
-                if(productPrice.Equals(""))
+                string productKeyString = matchName[0].Value.Split(": ")[1];
+                string productName = productKeyString.Substring(1, productKeyString.Length - 2);
+                if (productPrice.Equals(""))
                 {
                     continue;
                 }
@@ -138,17 +150,17 @@ namespace CommunityBot.Modules
         private string DecideProductTargetPrice(string priceString, string formmattedPriceString)
         {
             string productPrice = "";
-            if(!priceString.Equals("0.0") && !priceString.Equals("\"see store for price\""))
+            if (!priceString.Equals("0.0") && !priceString.Equals("\"see store for price\""))
             {
                 productPrice = priceString;
             }
-            else if(!formmattedPriceString.Equals("0.0") && !formmattedPriceString.Equals("\"see store for price\""))
+            else if (!formmattedPriceString.Equals("0.0") && !formmattedPriceString.Equals("\"see store for price\""))
             {
                 productPrice = formmattedPriceString;
             }
             return productPrice;
         }
-       
+
 
     }
 }

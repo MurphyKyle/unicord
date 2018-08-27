@@ -626,21 +626,22 @@ namespace CommunityBot.Modules
         [Command("rl"), Alias("roll"), Summary("Rolls any amount of dice (XdY) and returns what it has rolled"), Remarks("If it has over 2048 characters, it just displays the total")]
         public async Task RollDie(string roll)
         {
-            Regex regex = new Regex("[1-9][0-9]*[d|D][1-9][0-9]*");
+            Regex regex = new Regex("[1-9][0-9]*[d|D][1-9][0-9]*[+]?[0-9]*");
             if (regex.IsMatch(roll))
             {
                 string[] split = roll.Split('d');
+                string[] mod = split[1].Split('+');
                 Random rand = new Random();
                 List<int> nums = new List<int>();
                 for (int i = 0; i < int.Parse(split[0]); i++)
                 {
-                    nums.Add(rand.Next(1, int.Parse(split[1])));
+                    nums.Add(rand.Next(1, int.Parse(mod[0])));
                 }
-                int sum = 0;
+                int sum = int.Parse(mod[1]);
                 string retVal = "";
                 nums.ForEach(x => sum += x);
                 nums.ForEach(x => retVal += $"{x}+");
-                retVal = retVal.TrimEnd('+');
+                retVal += mod[1];
                 retVal += $". Total: {sum}";
                 if (retVal.Length > 2048)
                 {
