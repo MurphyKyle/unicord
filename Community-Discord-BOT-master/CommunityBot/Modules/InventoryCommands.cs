@@ -77,7 +77,6 @@ namespace CommunityBot.Modules
 
 			try
 			{
-				data = "Kyle~ Cool dud~ person:true~ notPerson:alsotrue~";
 				List<string> atts = data.Split('~').ToList();
 				string name = atts[0].Trim();
 				string description = atts[1].Trim();
